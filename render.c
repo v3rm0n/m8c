@@ -3,12 +3,12 @@
 
 #include "render.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <stdio.h>
 
 #include "SDL2_inprint.h"
-#include "SDL_log.h"
-#include "SDL_render.h"
+#include "SDL2/SDL_log.h"
+#include "SDL2/SDL_render.h"
 #include "command.h"
 #include "fx_cube.h"
 

@@ -1,4 +1,4 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include "SDL2_inprint.h"
 
 #define target_width 320

@@ -3,7 +3,7 @@
 
 #include "config.h"
 #include "ini.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <assert.h>
 
 /* Case insensitive string compare from ini.h library */

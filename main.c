@@ -5,8 +5,8 @@
    CFLAGS=-DDEBUG_MSG` */
 // #define DEBUG_MSG
 
-#include <SDL.h>
 #include <libserialport.h>
+#include <SDL2/SDL.h>
 #include <signal.h>
 
 #include "command.h"

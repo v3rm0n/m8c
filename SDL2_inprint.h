@@ -5,7 +5,7 @@
 #ifndef SDL2_inprint_h
 #define SDL2_inprint_h
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 extern void prepare_inline_font(void);
 extern void kill_inline_font(void);

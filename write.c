@@ -1,9 +1,9 @@
 // Copyright 2021 Jonne Kokkonen
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
-#include "SDL_timer.h"
-#include <SDL_log.h>
 #include <libserialport.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_log.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>

@@ -5,7 +5,10 @@
 #define WRITE_H_
 
 #include <stdint.h>
-#include <libserialport.h>
+
+struct sp_port{};
+
+int sp_blocking_write(struct sp_port *port, uint8_t *buf, int buflength, int something);
 
 int reset_display(struct sp_port *port);
 int enable_and_reset_display(struct sp_port *port);

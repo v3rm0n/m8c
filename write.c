@@ -1,12 +1,16 @@
 // Copyright 2021 Jonne Kokkonen
 // Released under the MIT licence, https://opensource.org/licenses/MIT
 
-#include <libserialport.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_log.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <unistd.h>
+
+
+int sp_blocking_write(struct sp_port *port, uint8_t *buf, int buflength, int something) {
+    return 0;
+}
 
 int reset_display(struct sp_port *port) {
   SDL_Log("Reset display\n");

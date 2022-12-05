@@ -5,7 +5,6 @@
    CFLAGS=-DDEBUG_MSG` */
 // #define DEBUG_MSG
 
-#include <libserialport.h>
 #include <SDL2/SDL.h>
 #include <signal.h>
 
@@ -30,11 +29,11 @@ void intHandler(int dummy) { run = QUIT; }
 
 void close_serial_port(struct sp_port *port) {
   disconnect(port);
-  sp_close(port);
-  sp_free_port(port);
+  //sp_close(port);
+  //sp_free_port(port);
 }
 
-int main(int argc, char *argv[]) {
+int entrypoint(void) {
   // Initialize the config to defaults read in the params from the
   // configfile if present
   config_params_s conf = init_config();
@@ -202,8 +201,8 @@ int main(int argc, char *argv[]) {
 
       while (1) {
         // read serial port
-        int bytes_read =
-            sp_nonblocking_read(port, serial_buf, serial_read_size);
+          int bytes_read =0;
+            //sp_nonblocking_read(port, serial_buf, serial_read_size);
         if (bytes_read < 0) {
           SDL_LogCritical(SDL_LOG_CATEGORY_ERROR, "Error %d reading serial. \n",
                           (int)bytes_read);

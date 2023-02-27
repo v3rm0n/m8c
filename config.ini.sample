@@ -15,6 +15,12 @@ wait_for_device = true
 ; number of zero-byte attempts to disconnect if wait_for_device = false (128 = about 2 sec for default idle_ms)
 wait_packets = 128
 
+[audio]
+; set this to true to use audio
+use_audio = false
+; specify audio device by name if needed
+audio_device = M8
+
 [keyboard]
 ; these need to be the decimal value of the SDL scancodes.
 ; a table exists here: https://github.com/libsdl-org/sdlwiki/blob/main/SDLScancodeLookup.mediawiki

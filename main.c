@@ -15,6 +15,7 @@
 #include "serial.h"
 #include "slip.h"
 #include "SDL2_inprint.h"
+#include "audio.h"
 
 enum state { QUIT, WAIT_FOR_DEVICE, RUN };
 
@@ -76,6 +77,9 @@ int main(int argc, char *argv[]) {
   if (initialize_sdl(conf.init_fullscreen, conf.init_use_gpu) == -1)
     run = QUIT;
 
+  if (conf.init_audio) {
+      init_audio(conf.audio_device);
+  }
   // initial scan for (existing) game controllers
   initialize_game_controllers();
 
@@ -249,6 +253,9 @@ int main(int argc, char *argv[]) {
 
   // exit, clean up
   SDL_Log("Shutting down\n");
+  if (conf.init_audio) {
+      close_audio();
+  }
   close_game_controllers();
   close_renderer();
   close_serial_port();

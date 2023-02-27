@@ -28,6 +28,9 @@ config_params_s init_config() {
   c.wait_for_device = 0; // default to exit if device disconnected
   c.wait_packets = 1024;   // default zero-byte attempts to disconnect (about 2 sec for default idle_ms)
 
+  c.init_audio = 0;
+  c.audio_device = "M8";
+
   c.key_up = SDL_SCANCODE_UP;
   c.key_left = SDL_SCANCODE_LEFT;
   c.key_down = SDL_SCANCODE_DOWN;
@@ -92,6 +95,11 @@ void write_config(config_params_s *conf) {
   snprintf(ini_values[initPointer++], LINELEN, "wait_for_device=%s\n",
            conf->wait_for_device ? "true" : "false");
   snprintf(ini_values[initPointer++], LINELEN, "wait_packets=%d\n", conf->wait_packets);
+  snprintf(ini_values[initPointer++], LINELEN, "[audio]\n");
+    snprintf(ini_values[initPointer++], LINELEN, "use_audio=%s\n",
+             conf->init_audio ? "true" : "false");
+  snprintf(ini_values[initPointer++], LINELEN, "audio_device=%s\n", conf->audio_device);
+  snprintf(ini_values[initPointer++], LINELEN, "[audio]\n");
   snprintf(ini_values[initPointer++], LINELEN, "[keyboard]\n");
   snprintf(ini_values[initPointer++], LINELEN, "key_up=%d\n", conf->key_up);
   snprintf(ini_values[initPointer++], LINELEN, "key_left=%d\n", conf->key_left);
@@ -191,6 +199,7 @@ void read_config(config_params_s *conf) {
   }
 
   read_graphics_config(ini, conf);
+  read_audio_config(ini, conf);
   read_key_config(ini, conf);
   read_gamepad_config(ini, conf);
 
@@ -232,6 +241,22 @@ void read_graphics_config(ini_t *ini, config_params_s *conf) {
   }
   if (wait_packets != NULL)
     conf->wait_packets = SDL_atoi(wait_packets);
+}
+
+void read_audio_config(ini_t *ini, config_params_s *conf) {
+    const char *audio = ini_get(ini, "audio", "use_audio");
+    const char *audio_device = ini_get(ini, "audio", "audio_device");
+
+    if (audio != NULL) {
+        if (strcmpci(audio, "true") == 0) {
+            conf->init_audio = 1;
+        } else
+            conf->init_audio = 0;
+    }
+
+    if (audio_device != NULL) {
+        conf->audio_device = audio_device;
+    }
 }
 
 void read_key_config(ini_t *ini, config_params_s *conf) {

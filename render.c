@@ -44,7 +44,7 @@ int initialize_sdl(int init_fullscreen, int init_use_gpu) {
   rend = SDL_CreateRenderer(
       win, -1, init_use_gpu ? SDL_RENDERER_ACCELERATED : SDL_RENDERER_SOFTWARE);
 
-  maintexture = SDL_CreateTexture(rend, SDL_PIXELFORMAT_ARGB8888,
+  maintexture = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGB565,
                                   SDL_TEXTUREACCESS_TARGET, 320, 240);
 
   SDL_SetRenderTarget(rend, maintexture);

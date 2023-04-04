@@ -39,13 +39,10 @@ int initialize_sdl(int init_fullscreen, int init_use_gpu) {
 
   win = SDL_CreateWindow("m8c", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                          window_width, window_height,
-                         SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL |
-                             SDL_WINDOW_RESIZABLE | init_fullscreen);
+                         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | init_fullscreen);
 
   rend = SDL_CreateRenderer(
       win, -1, init_use_gpu ? SDL_RENDERER_ACCELERATED : SDL_RENDERER_SOFTWARE);
-
-  SDL_RenderSetLogicalSize(rend, 320, 240);
 
   maintexture = SDL_CreateTexture(rend, SDL_PIXELFORMAT_ARGB8888,
                                   SDL_TEXTUREACCESS_TARGET, 320, 240);

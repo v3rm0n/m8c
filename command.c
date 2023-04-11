@@ -48,7 +48,6 @@ int process_command(uint8_t *data, uint32_t size) {
           draw_rectangle_command_datalength, size);
       dump_packet(size, recv_buf);
       return 0;
-      break;
     } else {
 
       struct draw_rectangle_command rectcmd = {
@@ -60,8 +59,6 @@ int process_command(uint8_t *data, uint32_t size) {
       return 1;
     }
 
-    break;
-
   case draw_character_command:
 
     if (size != draw_character_command_datalength) {
@@ -71,7 +68,6 @@ int process_command(uint8_t *data, uint32_t size) {
           draw_character_command_datalength, size);
       dump_packet(size, recv_buf);
       return 0;
-      break;
     } else {
 
       struct draw_character_command charcmd = {
@@ -82,8 +78,6 @@ int process_command(uint8_t *data, uint32_t size) {
       draw_character(&charcmd);
       return 1;
     }
-
-    break;
 
   case draw_oscilloscope_waveform_command:
 
@@ -98,7 +92,6 @@ int process_command(uint8_t *data, uint32_t size) {
           draw_oscilloscope_waveform_command_maxdatalength, size);
       dump_packet(size, recv_buf);
       return 0;
-      break;
     } else {
 
       struct draw_oscilloscope_waveform_command osccmd;
@@ -113,8 +106,6 @@ int process_command(uint8_t *data, uint32_t size) {
       return 1;
     }
 
-    break;
-
   case joypad_keypressedstate_command:
     /*
     if (size != joypad_keypressedstate_command_datalength) {
@@ -128,13 +119,11 @@ int process_command(uint8_t *data, uint32_t size) {
 
     // nothing is done with joypad key pressed packets for now
     return 1;
-    break;
 
   default:
 
     SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Invalid packet\n");
     dump_packet(size, recv_buf);
     return 0;
-    break;
   }
 }

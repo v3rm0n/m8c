@@ -27,7 +27,6 @@ It has been simplified a bit as CRC checking etc. is not required in this
 program. */
 
 #include "slip.h"
-#include "command.h"
 
 #include <assert.h>
 #include <stddef.h>

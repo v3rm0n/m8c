@@ -3,7 +3,6 @@
 #include <libusb.h>
 #include <errno.h>
 #include <SDL.h>
-#include "ringbuffer.h"
 #include "usb.h"
 
 #define EP_ISO_IN 0x85
@@ -14,21 +13,6 @@
 #define NUM_PACKETS 2
 
 SDL_AudioDeviceID sdl_audio_device_id = 0;
-RingBuffer *audio_buffer = NULL;
-
-static void audio_callback(void *userdata, Uint8 *stream,
-                           int len) {
-  uint32_t read_len = ring_buffer_pop(audio_buffer, stream, len);
-
-  if (read_len == -1) {
-    SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Buffer underflow!");
-  }
-
-  // If we didn't read the full len bytes, fill the rest with zeros
-  if (read_len < len) {
-    SDL_memset(&stream[read_len], 0, len - read_len);
-  }
-}
 
 static void cb_xfr(struct libusb_transfer *xfr) {
   unsigned int i;
@@ -45,10 +29,7 @@ static void cb_xfr(struct libusb_transfer *xfr) {
 
     const uint8_t *data = libusb_get_iso_packet_buffer_simple(xfr, i);
     if (sdl_audio_device_id != 0) {
-      uint32_t actual = ring_buffer_push(audio_buffer, data, pack->actual_length);
-      if (actual == -1) {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Buffer overflow!");
-      }
+      SDL_QueueAudio(sdl_audio_device_id, data, pack->actual_length);
     }
   }
 
@@ -75,6 +56,9 @@ static int benchmark_in() {
     libusb_fill_iso_transfer(xfr[i], devh, EP_ISO_IN, buffer,
                              PACKET_SIZE * NUM_PACKETS, NUM_PACKETS, cb_xfr, NULL, 0);
     libusb_set_iso_packet_lengths(xfr[i], PACKET_SIZE);
+
+    xfr[i]->flags = LIBUSB_TRANSFER_SHORT_NOT_OK
+                    | LIBUSB_TRANSFER_FREE_BUFFER | LIBUSB_TRANSFER_FREE_TRANSFER;
 
     libusb_submit_transfer(xfr[i]);
   }
@@ -124,7 +108,6 @@ int audio_init(int audio_buffer_size, const char *output_device_name) {
   audio_spec.channels = 2;
   audio_spec.freq = 44100;
   audio_spec.samples = audio_buffer_size;
-  audio_spec.callback = audio_callback;
 
   SDL_AudioSpec _obtained;
   SDL_zero(_obtained);
@@ -138,8 +121,6 @@ int audio_init(int audio_buffer_size, const char *output_device_name) {
   } else {
     sdl_audio_device_id = SDL_OpenAudioDevice(output_device_name, 0, &audio_spec, &_obtained, 0);
   }
-
-  audio_buffer = ring_buffer_create(4 * _obtained.size);
 
   SDL_Log("Obtained audio spec. Sample rate: %d, channels: %d, samples: %d, size: %d",
           _obtained.freq,
@@ -169,7 +150,6 @@ int audio_destroy() {
     if (rc < 0) {
       SDL_Log("Error cancelling transfer: %s\n", libusb_error_name(rc));
     }
-    SDL_free(xfr[i]->buffer);
   }
 
   SDL_Log("Freeing interface %d", IFACE_NUM);
@@ -188,8 +168,6 @@ int audio_destroy() {
   }
 
   SDL_Log("Audio closed");
-
-  ring_buffer_free(audio_buffer);
   return 1;
 }
 

@@ -6,8 +6,6 @@
 #ifdef USE_LIBUSB
 
 #include <SDL.h>
-#include <stdlib.h>
-#include <string.h>
 #include <libusb.h>
 
 #include "usb.h"
@@ -134,6 +132,11 @@ int init_interface() {
   }
 
   usb_thread = SDL_CreateThread(&usb_loop, "USB", NULL);
+
+  if (!usb_thread) {
+    SDL_Log("Error creating USB thread: %s", SDL_GetError());
+    return 0;
+  }
 
   return 1;
 }

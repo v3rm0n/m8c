@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libusb.h>
-
+#include <jni.h>
 #include "usb.h"
 
 static int ep_out_addr = 0x03;
@@ -170,6 +170,33 @@ int init_serial_with_file_descriptor(int file_descriptor) {
   return init_interface();
 }
 
+int init_serial_android(JNIEnv *env) {
+
+    SDL_Log("USB device init start");
+
+
+    if (devh != NULL) {
+        return 1;
+    }
+
+    int r;
+    r = libusb_set_option(0, LIBUSB_OPTION_ANDROID_JNIENV, env, 0);
+    SDL_Log("libusb_set_option ANDROID_JAVAVM: %s", libusb_strerror(r));
+    r = libusb_init(&ctx);
+    if (r < 0) {
+        SDL_Log("libusb_init failed: %s", libusb_error_name(r));
+        return 0;
+    }
+    devh = libusb_open_device_with_vid_pid(ctx, 0x16c0, 0x048a);
+    if (devh == NULL) {
+        SDL_Log("libusb_open_device_with_vid_pid returned invalid handle");
+        return 0;
+    }
+    SDL_Log("USB device init success");
+
+    return init_interface();
+}
+
 int init_serial(int verbose) {
 
   if (devh != NULL) {
@@ -189,7 +216,7 @@ int init_serial(int verbose) {
   }
   SDL_Log("USB device init success");
 
-  return init_interface();
+  return 0;
 }
 
 int reset_display() {

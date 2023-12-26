@@ -7,7 +7,9 @@
 #ifdef USE_LIBUSB
 // Max packet length of the USB endpoint
 #define serial_read_size 512
+#include <jni.h>
 int init_serial_with_file_descriptor(int file_descriptor);
+int init_serial_android(JNIEnv *env);
 #else
 // maximum amount of bytes to read from the serial in one read()
 #define serial_read_size 512

@@ -15,9 +15,9 @@ RingBuffer *ring_buffer_create(uint32_t size);
 
 uint32_t ring_buffer_empty(RingBuffer *rb);
 
-uint32_t ring_buffer_pop(RingBuffer *rb, uint8_t *data, uint32_t length);
+int32_t ring_buffer_pop(RingBuffer *rb, uint8_t *data, uint32_t length);
 
-uint32_t ring_buffer_push(RingBuffer *rb, const uint8_t *data, uint32_t length);
+int32_t ring_buffer_push(RingBuffer *rb, const uint8_t *data, uint32_t length);
 
 void ring_buffer_free(RingBuffer *rb);
 

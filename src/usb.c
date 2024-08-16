@@ -57,8 +57,11 @@ int list_devices() {
 
 int usb_loop(void *data) {
   SDL_SetThreadPriority(SDL_THREAD_PRIORITY_TIME_CRITICAL);
-  while (!do_exit) {
-    int rc = libusb_handle_events(ctx);
+  int completed = 0;
+  struct timeval timeout = {1, 0}; // 1 second timeout
+
+  while (!do_exit && !completed) {
+    int rc = libusb_handle_events_timeout_completed(ctx, &timeout, &completed);
     if (rc != LIBUSB_SUCCESS) {
       SDL_Log("Audio loop error: %s\n", libusb_error_name(rc));
       break;
@@ -69,44 +72,18 @@ int usb_loop(void *data) {
 
 static SDL_Thread *usb_thread;
 
-static void LIBUSB_CALL xfr_cb_in(struct libusb_transfer *transfer) {
-  int *completed = transfer->user_data;
-  *completed = 1;
-}
-
 int bulk_transfer(int endpoint, uint8_t *serial_buf, int count, unsigned int timeout_ms) {
   if (devh == NULL) {
     return -1;
   }
 
-  int completed = 0;
+  int actual_length = 0;
+  int r = libusb_bulk_transfer(devh, endpoint, serial_buf, count, &actual_length, timeout_ms);
 
-  struct libusb_transfer *transfer;
-  transfer = libusb_alloc_transfer(0);
-  libusb_fill_bulk_transfer(transfer, devh, endpoint, serial_buf, count, xfr_cb_in, &completed,
-                            timeout_ms);
-  int r = libusb_submit_transfer(transfer);
-
-  if (r < 0) {
-    SDL_Log("Error");
-    libusb_free_transfer(transfer);
+  if (r < 0 && r != -7) {
+    SDL_Log("Error %d", r);
     return r;
   }
-
-retry:
-  libusb_lock_event_waiters(ctx);
-  while (!completed) {
-    if (!libusb_event_handler_active(ctx)) {
-      libusb_unlock_event_waiters(ctx);
-      goto retry;
-    }
-    libusb_wait_for_event(ctx, NULL);
-  }
-  libusb_unlock_event_waiters(ctx);
-
-  int actual_length = transfer->actual_length;
-
-  libusb_free_transfer(transfer);
 
   return actual_length;
 }

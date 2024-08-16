@@ -12,15 +12,15 @@ RingBuffer *ring_buffer_create(uint32_t size) {
 }
 
 void ring_buffer_free(RingBuffer *rb) {
-  free(rb->buffer);
-  free(rb);
+  SDL_free(rb->buffer);
+  SDL_free(rb);
 }
 
 uint32_t ring_buffer_empty(RingBuffer *rb) { return (rb->size == 0); }
 
 uint32_t ring_buffer_full(RingBuffer *rb) { return (rb->size == rb->max_size); }
 
-uint32_t ring_buffer_push(RingBuffer *rb, const uint8_t *data, uint32_t length) {
+int32_t ring_buffer_push(RingBuffer *rb, const uint8_t *data, uint32_t length) {
   if (ring_buffer_full(rb)) {
     return -1; // buffer full, push fails
   } else {
@@ -38,7 +38,7 @@ uint32_t ring_buffer_push(RingBuffer *rb, const uint8_t *data, uint32_t length) 
   }
 }
 
-uint32_t ring_buffer_pop(RingBuffer *rb, uint8_t *data, uint32_t length) {
+int32_t ring_buffer_pop(RingBuffer *rb, uint8_t *data, uint32_t length) {
   if (ring_buffer_empty(rb)) {
     return -1; // buffer empty, pop fails
   } else {
